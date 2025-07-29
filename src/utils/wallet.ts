@@ -2,6 +2,7 @@ import { Keypair } from "@solana/web3.js";
 import { generateMnemonic , mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
+import { Connection, PublicKey } from '@solana/web3.js';
 
 
 export interface WalletAccount{
@@ -14,6 +15,21 @@ export interface WalletData{
     mnemonic:string;
     accounts:WalletAccount[];
 }
+
+export const getSolBalance = async (publicKey: string): Promise<string> => {
+  try {
+    const connection = new Connection('https://eth-mainnet.g.alchemy.com/v2/Ub9bKtLmFHitTHFeiZEGD');
+    const pubkey = new PublicKey(publicKey);
+
+    const lamports = await connection.getBalance(pubkey);
+    const sol = lamports / 1e9;
+
+    return sol.toFixed(6); // 6 decimal places
+  } catch (err) {
+    console.error('Error fetching SOL balance:', err);
+    return 'Error';
+  }
+};
 
 export const createAccount=() :WalletData =>
 {
